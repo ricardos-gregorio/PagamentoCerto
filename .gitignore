@@ -1,0 +1,14 @@
+node_modules/
+.env
+.venv/
+__pycache__/
+*.py[cod]
+
+# Dados pessoais (valores, PIX, nomes reais) — nunca commitar
+app/contas.md
+lista.md
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+prompt.md

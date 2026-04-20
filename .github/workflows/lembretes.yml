@@ -1,0 +1,56 @@
+# Disparo diário 09:00 America/Sao_Paulo (UTC-3 fixo → 12:00 UTC).
+# Ajuste se o horário de verão voltar a existir no Brasil.
+
+name: Lembretes de vencimento
+
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "run envia e-mails; check só diagnostica (sem e-mail)"
+        type: choice
+        options:
+          - run
+          - check
+        default: run
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    steps:
+      # v6+ usa runtime compatível com Node 24 (evita aviso de depreciação do Node 20).
+      - uses: actions/checkout@v6
+
+      - name: Commit em execução
+        run: |
+          echo "GITHUB_SHA=${GITHUB_SHA}"
+          echo "Use este SHA para conferir no GitHub se o workflow está na última versão do main."
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Executar lembretes
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          EMAIL_FROM_NAME: ${{ secrets.EMAIL_FROM_NAME }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          # Link da planilha: Secret LISTA_URL (ou Variable LISTA_URL no repositório).
+          LISTA_URL: ${{ secrets.LISTA_URL || vars.LISTA_URL }}
+          # Opcional: chave Google Sheets API v4 (evita HTTP 400 no export público no Actions).
+          SHEETS_API_KEY: ${{ secrets.SHEETS_API_KEY }}
+        run: |
+          set -e
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.modo }}" = "check" ]; then
+            python -m pagamento_certo --check
+          else
+            python -m pagamento_certo
+          fi

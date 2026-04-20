@@ -1,0 +1,40 @@
+## Contexto do projeto
+
+Quero criar um aplicativo para enviar alertas de vencimentos das minhas despesas fixas. Estes alertas são enviados via gmail com 3,2,1 dias de antecedencia para que eu não perca as datas dos meus pagamentos.
+
+A stask é python, pois quero criar um agendamento diário
+os envios por email não devem ser por MCP
+Não podemos deixar nosso arquivo .env exposto no github
+Não podemos expor nossa lista de pagamentos por um grande motivo. Nesta lista teremos o numero pix dos meus fornecedores e teremos também os valores e descrição dos meus pagamentos que não podem ser vazados em nenhuma hipótese.
+
+Eu gostaria de utilizar o github actions, pois é um projeto familiar e não teremos muitos envios. 
+
+
+A lista deve ser um markdown simples para que eu possa atualizar sempre que for necessário:
+
+| descricao               | valor   | vencimento | pix               |
+|-------------------------|---------|------------|-------------------|
+| exemplo01            | 62.14  | 10         | xxx    |
+| exemplo02            | 93.56  | 10         | xxxx    |
+| exemplo01            | 21.00  | 10         | xxxxx    |
+
+Este arquivo precisa ser lido em runtime. Ele estará disponivel no google drive
+- Gerar arquivos apenas em runtime
+   - Nunca commitar esses arquivos
+   - Nunca logar conteúdo sensível no console
+
+
+
+
+## Critério de validação
+
+Vai estar certo quando:
+1. Quando o email estiver chegando na caixa de email do destinatário 3 vezes(3,2,1 dias antes do vencimento)
+2. Quando o app conseguir enviar estes emails diáriamente, as 09:00 hs da manhã
+3. Ler variável segura (ex: ${{ secrets.NOME_DO_SECRET }})
+4. Criar arquivo temporário (ex: lista.md)
+5. Utilizar o arquivo no processamento necessário
+6. deletar o arquivo de lista no final
+
+
+Antes de implementar: me diga se precisa de alguma informação adicional sobre o projeto.
